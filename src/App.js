@@ -246,7 +246,7 @@ function App() {
     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
   }}
 >
-  Enquire Now
+  Enquire Now check
 </motion.div>
 
 
