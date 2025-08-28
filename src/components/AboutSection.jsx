@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
-import { useRef, useEffect, useMemo } from "react";
-import "./Hero.css";
+import { useRef, useEffect, useMemo, useState } from "react";
+import Form from "./Form"; 
 
 function AboutSection() {
   const sectionRef = useRef(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const wordVariants = {
     hidden: { filter: "blur(10px)", opacity: 0, y: -50 },
@@ -12,9 +14,9 @@ function AboutSection() {
       opacity: [0, 0.5, 1],
       y: [-50, 5, 0],
       transition: {
-        filter: { duration: 0.7, times: [0, 0.5, 1], delay: i * 0.2, ease: "easeOut" },
-        opacity: { duration: 0.7, times: [0, 0.5, 1], delay: i * 0.2, ease: "easeOut" },
-        y: { duration: 0.7, times: [0, 0.5, 1], delay: i * 0.2, ease: "easeOut" },
+        filter: { duration: 0.7, delay: i * 0.2, ease: "easeOut" },
+        opacity: { duration: 0.7, delay: i * 0.2, ease: "easeOut" },
+        y: { duration: 0.7, delay: i * 0.2, ease: "easeOut" },
       },
     }),
   };
@@ -24,11 +26,7 @@ function AboutSection() {
     visible: (i) => ({
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.5,
-        delay: i * 0.1,
-        ease: "easeOut",
-      },
+      transition: { duration: 0.5, delay: i * 0.1, ease: "easeOut" },
     }),
   };
 
@@ -36,16 +34,13 @@ function AboutSection() {
     hidden: { scale: 1 },
     visible: {
       scale: [1, 1.05, 1],
-      transition: {
-        scale: { duration: 0.5, repeat: Infinity, repeatType: "loop", ease: "easeInOut" },
-      },
+      transition: { duration: 0.5, repeat: Infinity, repeatType: "loop", ease: "easeInOut" },
     },
   };
 
-  const headingWords = "About Luxe Realty".split(" ");
-
+  const headingWords = "SPJ Vedatam".split(" ");
   const paragraphText =
-    "At Luxe Realty, we specialize in connecting you with exceptional properties that match your unique vision. With over a decade of experience, our team is dedicated to providing personalized service, ensuring you find a home that feels just right.";
+    "In the heart of Gurgaon, Vedatam is a 21 storeys of curated space where exclusive brands symbolize refined ambition. Welcome to Vedatam, where success takes the spotlight on a sunlit stage of prosperity built on the foundation of values Vedatam is an upcoming premier commercial hub, designed to redefine business and retail experiences for modern entrepreneurs and enterprises. Strategically located in Sector 14, Gurugram, Vedatam is set to be a bustling commercial centre that draws significant foot traffic, providing businesses with the ideal platform to thrive and grow.";
 
   const letterRefs = useRef([]);
   const interpolatedSettingsRef = useRef([]);
@@ -53,60 +48,52 @@ function AboutSection() {
   const toFontVariationSettings = "'wght' 700";
   const radius = 100;
   const falloff = "gaussian";
-
   const positionRef = useRef({ x: 0, y: 0 });
+
+  // Mouse tracking for font weight interpolation
   useEffect(() => {
     const updatePosition = (x, y) => {
-      if (sectionRef?.current) {
-        const rect = sectionRef.current.getBoundingClientRect();
+      const rect = sectionRef.current?.getBoundingClientRect();
+      if (rect) {
         positionRef.current = { x: x - rect.left, y: y - rect.top };
-      } else {
-        positionRef.current = { x, y };
       }
     };
 
     const handleMouseMove = (ev) => updatePosition(ev.clientX, ev.clientY);
-    const handleTouchMove = (ev) => {
-      const touch = ev.touches[0];
-      updatePosition(touch.clientX, touch.clientY);
-    };
+    const handleTouchMove = (ev) => updatePosition(ev.touches[0].clientX, ev.touches[0].clientY);
 
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("touchmove", handleTouchMove);
+
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("touchmove", handleTouchMove);
     };
   }, []);
 
-  // Parse font variation settings
   const parsedSettings = useMemo(() => {
-    const parseSettings = (settingsStr) =>
+    const parse = (str) =>
       new Map(
-        settingsStr
-          .split(",")
-          .map((s) => s.trim())
-          .map((s) => {
-            const [name, value] = s.split(" ");
-            return [name.replace(/['"]/g, ""), parseFloat(value)];
-          })
+        str.split(",").map((s) => {
+          const [k, v] = s.trim().split(" ");
+          return [k.replace(/['"]/g, ""), parseFloat(v)];
+        })
       );
+    const from = parse(fromFontVariationSettings);
+    const to = parse(toFontVariationSettings);
 
-    const fromSettings = parseSettings(fromFontVariationSettings);
-    const toSettings = parseSettings(toFontVariationSettings);
-
-    return Array.from(fromSettings.entries()).map(([axis, fromValue]) => ({
+    return Array.from(from.entries()).map(([axis, fromValue]) => ({
       axis,
       fromValue,
-      toValue: toSettings.get(axis) ?? fromValue,
+      toValue: to.get(axis) ?? fromValue,
     }));
-  }, [fromFontVariationSettings, toFontVariationSettings]);
+  }, []);
 
   const calculateDistance = (x1, y1, x2, y2) =>
     Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 
   const calculateFalloff = (distance) => {
-    const norm = Math.min(Math.max(1 - distance / radius, 0), 1);
+    const norm = Math.max(1 - distance / radius, 0);
     switch (falloff) {
       case "exponential":
         return norm ** 2;
@@ -121,43 +108,38 @@ function AboutSection() {
   useEffect(() => {
     let frameId;
     const loop = () => {
-      if (!sectionRef?.current) return;
-      const containerRect = sectionRef.current.getBoundingClientRect();
+      const containerRect = sectionRef.current?.getBoundingClientRect();
+      if (!containerRect) return;
+
       const { x, y } = positionRef.current;
 
-      letterRefs.current.forEach((letterRef, index) => {
-        if (!letterRef) return;
-
-        const rect = letterRef.getBoundingClientRect();
-        const letterCenterX = rect.left + rect.width / 2 - containerRect.left;
-        const letterCenterY = rect.top + rect.height / 2 - containerRect.top;
-
-        const distance = calculateDistance(
-          positionRef.current.x,
-          positionRef.current.y,
-          letterCenterX,
-          letterCenterY
-        );
+      letterRefs.current.forEach((ref, index) => {
+        if (!ref) return;
+        const rect = ref.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2 - containerRect.left;
+        const centerY = rect.top + rect.height / 2 - containerRect.top;
+        const distance = calculateDistance(x, y, centerX, centerY);
 
         if (distance >= radius) {
-          letterRef.style.fontVariationSettings = fromFontVariationSettings;
+          ref.style.fontVariationSettings = fromFontVariationSettings;
           return;
         }
 
         const falloffValue = calculateFalloff(distance);
         const newSettings = parsedSettings
           .map(({ axis, fromValue, toValue }) => {
-            const interpolatedValue = fromValue + (toValue - fromValue) * falloffValue;
-            return `'${axis}' ${interpolatedValue}`;
+            const interpolated = fromValue + (toValue - fromValue) * falloffValue;
+            return `'${axis}' ${interpolated}`;
           })
           .join(", ");
 
         interpolatedSettingsRef.current[index] = newSettings;
-        letterRef.style.fontVariationSettings = newSettings;
+        ref.style.fontVariationSettings = newSettings;
       });
 
       frameId = requestAnimationFrame(loop);
     };
+
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
   }, [parsedSettings]);
@@ -165,10 +147,22 @@ function AboutSection() {
   const words = paragraphText.split(" ");
   let letterIndex = 0;
 
+  const handleOpenModal = () => {
+    if (!isModalOpen && !isButtonDisabled) {
+      setIsModalOpen(true);
+      setIsButtonDisabled(true);
+      setTimeout(() => setIsButtonDisabled(false), 300);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <section id="about" className="py-16 px-4 md:px-16 bg-[#fffbfb]" ref={sectionRef}>
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
-        {/* Left Section - Content */}
+        {/* Left */}
         <motion.div
           className="w-full md:w-1/2 text-center md:text-left"
           initial={{ opacity: 0, y: 50 }}
@@ -177,21 +171,21 @@ function AboutSection() {
           viewport={{ once: true }}
         >
           <div className="text-4xl font-bold text-gray-800 mb-6 mt-10 flex flex-wrap justify-center md:justify-start gap-x-2">
-            {headingWords.map((word, index) => (
+            {headingWords.map((word, i) => (
               <motion.span
-                key={index}
+                key={i}
                 className="inline-block will-change-[transform,filter,opacity]"
                 variants={wordVariants}
                 initial="hidden"
                 whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
-                custom={index}
+                viewport={{ once: true }}
+                custom={i}
               >
-                {word}
-                {index < headingWords.length - 1 && "\u00A0"}
+                {word}{" "}
               </motion.span>
             ))}
           </div>
+
           <div className="text-lg text-gray-600 mb-8 flex flex-wrap justify-center md:justify-start gap-x-1">
             {words.map((word, wordIndex) => (
               <motion.span
@@ -200,7 +194,7 @@ function AboutSection() {
                 variants={paragraphWordVariants}
                 initial="hidden"
                 whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
+                viewport={{ once: true }}
                 custom={wordIndex}
               >
                 {word.split("").map((letter) => {
@@ -209,53 +203,52 @@ function AboutSection() {
                     <motion.span
                       key={currentLetterIndex}
                       ref={(el) => (letterRefs.current[currentLetterIndex] = el)}
-                      style={{
-                        display: "inline-block",
-                        fontVariationSettings:
-                          interpolatedSettingsRef.current[currentLetterIndex],
-                      }}
+                      style={{ display: "inline-block" }}
                       aria-hidden="true"
                     >
                       {letter}
                     </motion.span>
                   );
                 })}
-                {wordIndex < words.length - 1 && (
-                  <span style={{ display: "inline-block" }}> </span>
-                )}
+                {wordIndex < words.length - 1 && <span>&nbsp;</span>}
               </motion.span>
             ))}
-            <span className="sr-only">{paragraphText}</span>
           </div>
-          <motion.a
-            href="#contact"
-            className="border bg-[#caaa8591] globalbutton text-white py-3 px-6 text-lg transition duration-300"
+
+          <motion.button
+            onClick={handleOpenModal}
+            className="border-1 bg-[#caaa8591] globalbutton text-white py-3 px-6 text-lg transition duration-300 border-transparent hover:border-dashed hover:border-black 
+             hover:bg-[#caaa85] transition "
             variants={buttonPulseVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+            viewport={{ once: true }}
+            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
+            disabled={isButtonDisabled}
           >
-            <i className="fas fa-users mr-2"></i> Our Team
-          </motion.a>
+            <i className="fas fa-users mr-2"></i> Download Brochure
+          </motion.button>
         </motion.div>
 
-        {/* Right Section - Image */}
+        {/* Right Image */}
         <motion.div
-          className="w-full md:w-1/2 mt-10 "
+          className="w-full md:w-1/2 mt-10"
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
           <img
-            src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" 
+            src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80"
             alt="Luxe Realty Property"
             className="w-full h-auto rounded-lg shadow-lg object-cover"
           />
         </motion.div>
       </div>
+
+      {/* ✅ Use the shared Form modal here */}
+      {isModalOpen && <Form onClose={handleCloseModal} />}
     </section>
   );
 }

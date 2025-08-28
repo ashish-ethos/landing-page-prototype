@@ -81,27 +81,28 @@ body {
 /* Styles for the Download Button */
 .download-button {
   position: fixed;
-  bottom: 2rem; /* Adjusted to rem for consistency */
-  right: 2rem; /* Adjusted to rem for consistency */
-  background-color: #14b8a6; /* Matches bg-teal-600 */
+  bottom: 2rem;
+  right: 2rem;
+  background-color: #14b8a6;
   color: white;
-  padding: 0.75rem; /* Equivalent to p-3 */
-  border-radius: 9999px; /* Equivalent to rounded-full */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-lg */
-  transition: transform 0.3s ease, opacity 0.3s ease; /* Matches transition effects */
+  padding: 0.75rem;
+  border-radius: 9999px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  border: 2px solid white; /* Added border for visibility */
 }
 
 .download-button:hover {
-  transform: scale(1.2); /* Matches whileHover scale */
+  transform: scale(1.2);
 }
 
 .download-button:active {
-  transform: scale(0.9); /* Matches whileTap scale */
+  transform: scale(0.9);
 }
 
 .download-button.hidden {
   opacity: 0;
-  pointer-events: none; /* Prevents interaction when hidden */
+  pointer-events: none;
 }
 
 /* Responsive adjustments for header */
@@ -131,7 +132,7 @@ body {
 
 
 .enquiry-button {
-  background-color: #caaa8591;
+  background-color: #ab893b;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
@@ -154,6 +155,7 @@ body {
   right: 18px;
   top: 50%;
   transform: translateY(-50%) rotateY(-90deg);
+  rotate: 90deg;
   transform-origin: right;
   border: 1px solid #dfa317;
   background-color: #b98305;
@@ -174,4 +176,25 @@ body {
 .enquire-tab:hover {
   background-color: #a87c3a;
   transform: translateY(-50%) rotate(-90deg) scale(1.05);
+}
+.whatsapp-button {
+  position: fixed;
+  bottom: 5rem;
+  right: 1.8rem;
+  background-color: #25D366;
+  color: white;
+  padding: 0.75rem;
+  border-radius: 9999px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  border: 2px solid white;
+}
+
+.whatsapp-button:hover {
+  transform: scale(1.1);
+}
+
+.whatsapp-button:active {
+  transform: scale(0.95);
 }

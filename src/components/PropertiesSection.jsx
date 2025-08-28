@@ -78,7 +78,7 @@ function PropertiesSection() {
           </p>
           <motion.a
             href="#"
-            className="mt-4 inline-block font-semibold text-white py-2 px-4 globalbutton  transition duration-300"
+            className="mt-4 inline-block font-semibold text-white hover:bg-black py-2 px-4 globalbutton  transition duration-300"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >

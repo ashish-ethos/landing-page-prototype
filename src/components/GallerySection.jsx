@@ -531,7 +531,7 @@ function GallerySection() {
   ];
 
   return (
-    <section id="gallery" className="py-16 pt-4 px-4 bg-[#fdfdfd]">
+    <section id="gallery" className="py-16 pt-4 px-4 container ">
       <motion.div
         className=" mx-auto text-center"
         variants={containerVariants}
@@ -549,30 +549,9 @@ function GallerySection() {
           className="text-lg text-gray-600 mb-8"
           variants={paragraphVariants}
         >
-          Explore our stunning collection of properties that redefine luxury living.
+          Start your business in a thriving location.
         </motion.p>
-        <motion.div
-          className="flex max-w-md mx-auto mb-12"
-          variants={formVariants}
-          whileHover={{ scale: 1.02 }}
-          transition={{ duration: 0.3 }}
-        >
-          <motion.input
-            type="text"
-            placeholder="Search properties..."
-            className="w-full p-3 border  text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            whileFocus={{ scale: 1.01, boxShadow: '0 0 8px rgba(59, 130, 246, 0.5)' }}
-            transition={{ duration: 0.2 }}
-          />
-          <motion.button
-            className="bg-[#caaa85ad] text-white py-3 px-6  hover:bg-none transition duration-300"
-            animate={buttonControls}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <i className="fas fa-search mr-2"></i> Search
-          </motion.button>
-        </motion.div>
+        
         <div className="circular-gallery-wrapper">
           <CircularGallery
             items={galleryItems}
